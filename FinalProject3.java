@@ -381,8 +381,8 @@ class Schedule {
 		System.out.print("\nEnter the crns of the lectures: ");
 		sc.nextLine();
 		String str = sc.nextLine();
-		System.out.println("");
 
+		
 		String crns[] = str.split(" ");
 		for (String c : crns) {
 
@@ -391,10 +391,11 @@ class Schedule {
 
 				faculty.addLecture(l);
 
+				
 				if (l.hasLabs()) {
 
 					System.out
-							.println("[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] has these labs:");
+							.println("\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] has these labs:");
 
 					for (Lab lb : l.getLabs())
 						System.out.println(lb.getCRN() + "," + lb.getRoomNumber());
@@ -427,7 +428,7 @@ class Schedule {
 
 						} else {
 							TeachingAssistant ta1 = (TeachingAssistant) personsMap.get(ucfId);
-							System.out.println("TA found as a student: " + ta1.getName());
+							System.out.println("\nTA found as a student: " + ta1.getName());
 						}
 						ta.addLab(Integer.parseInt(c), lb1);
 
@@ -436,7 +437,7 @@ class Schedule {
 				} // if
 				personsMap.put(faculty.getUcfId(), faculty);
 
-			System.out.println("[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
+			System.out.println("\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
 			} // for crn
 			else
 				System.out.println("CRN [" + c + "] Not found");
@@ -449,7 +450,7 @@ class Schedule {
 		int ucfId = 0;
 		int crn;
 
-		System.out.print("Enter UCF student ID: ");
+		System.out.print("\nEnter UCF student ID: ");
 		ucfId = sc.nextInt();
 		validateUcfId(ucfId);
 
@@ -471,7 +472,7 @@ class Schedule {
 					for (Lab lab : labs)
 						System.out.println(lab.getCRN() + ", " + lab.getRoomNumber());
 
-					System.out.printf("\n[" + student.getName() + "] has been added to the lab.\n"
+					System.out.printf("\n[" + student.getName() + "] has been added to the lab."
 							+ labs.get(new Random().nextInt(labs.size())).getCRN());
 
 				} else
@@ -479,7 +480,7 @@ class Schedule {
 
 				student.addLecture(lecture);
 
-				System.out.println("Student enrolled!");
+				System.out.println("\nStudent enrolled!");
 
 			} else
 				System.out.println("CRN  [" + crn + "] not found");
@@ -567,7 +568,7 @@ class Schedule {
 			}
 
 		} else
-			System.out.println("Sorry, no TA found.");
+			System.out.println("\nSorry, no TA found.");
 	}//printScheduleOfTeachingAssistant
 
 	//----------------------------------------------------------------------------
@@ -846,7 +847,7 @@ public class FinalProject3 {
 
 						break;
 					case 4:
-						System.out.print("Enter the TA UCF ID: ");
+						System.out.print("\nEnter the TA UCF ID: ");
 						schedule.printScheduleOfTeachingAssistant(sc.nextInt());
 
 						break;
