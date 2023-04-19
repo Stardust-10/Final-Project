@@ -567,7 +567,7 @@ class Schedule {
 			}
 
 		} else
-			System.out.println("Sorry no TA found.");
+			System.out.println("Sorry, no TA found.");
 	}//printScheduleOfTeachingAssistant
 
 	//----------------------------------------------------------------------------
