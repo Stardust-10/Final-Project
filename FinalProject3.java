@@ -423,7 +423,7 @@ class Schedule {
 							ta.setAdvisor(new Faculty(advisor));
 
 							personsMap.put(ta.getUcfId(), ta);
-							System.out.println("[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
+							
 
 						} else {
 							TeachingAssistant ta1 = (TeachingAssistant) personsMap.get(ucfId);
@@ -436,7 +436,7 @@ class Schedule {
 				} // if
 				personsMap.put(faculty.getUcfId(), faculty);
 
-				// added lectures labs was here
+			System.out.println("[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
 			} // for crn
 			else
 				System.out.println("CRN [" + c + "] Not found");
