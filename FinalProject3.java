@@ -637,7 +637,7 @@ class Schedule {
 		System.out.println("Would you like to print the copy of lec.txt?");
 
 		while (true) {
-			System.out.print("\nEnter y/Y for Yes or n/N for No : ");
+			System.out.print("\nEnter y/Y for Yes or n/N for No: ");
 
 			String input = sc.next();
 			if (input.equals("y") || input.equals("Y")) {
@@ -648,7 +648,7 @@ class Schedule {
 				return;
 
 			} else {
-				System.out.print("Is that a yes or no?");
+				System.out.print("\nIs that a yes or no?");
 				continue;
 			}
 		}//while loop

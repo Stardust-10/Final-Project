@@ -1,6 +1,7 @@
 89745, COT6578, Advanced Computer theory, Graduate, F2F, PSY-108, No
 66636, DIG2158, Introduction to Digital Systems, Undergraduate, Online
 32658, COT6578, Advanced Computer theory, Graduate, Mixed, LPS-35, No
+69745,COP5698, Programming Languages,Graduate,F2F,CB2-122,YES
 56980, CDL2587, Introduction to Computers, Undergraduate, F2F, MSB-116, Yes
 98123,RMA-008
 91862,RMA-008
