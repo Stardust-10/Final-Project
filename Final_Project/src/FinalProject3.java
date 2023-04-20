@@ -404,6 +404,7 @@ class Schedule {
 
 						System.out.print("\nEnter the TA UCF ID for " + lb1.getCRN() + ": ");
 						ucfId = sc.nextInt();
+						validateUcfId(ucfId);
 
 						if (!personsMap.containsKey(ucfId)) {
 
@@ -729,7 +730,7 @@ class Schedule {
 	private void validateUcfId(Integer ucfId) {
 		try {
 			if (ucfId.toString().length() != 7)
-				throw new IdException(">>>>>>>>>>>>>>>> Sorry incorrect format. (Id's are 7 digits)");
+				throw new IdException(">>>>>>>>>>>>>>>> Sorry incorrect format. (ID's are 7 digits)");
 		} catch (Throwable e) {
 			System.err.println(e.getMessage());
 		}
