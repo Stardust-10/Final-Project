@@ -1,8 +1,9 @@
 /*
 - COP 3330 Final Project
-- Alaa Aljundi,Jessenia Argueta (Section 0V03),Lakshmi (Section 0002)
+- Alaa Aljundi (Section 0V03),Jessenia Argueta (Section 0V03),Lakshmi (Section 0002)
 */
 
+//I added my section
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
