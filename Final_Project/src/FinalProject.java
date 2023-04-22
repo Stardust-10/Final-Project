@@ -1,6 +1,6 @@
 /*
 - COP 3330 Final Project
-- Alaa Aljundi (Section 0V03),Jessenia Argueta (Section 0V03),Lakshmi (Section 0002)
+- Alaa Aljundi (Secton 0V03),Jessenia Argueta (Section 0V03),Lakshmi (Section 0002)
 */
 
 import java.io.BufferedReader;
@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -336,13 +337,18 @@ class Schedule {
 
 	Map<Integer, Lecture> lecturesMap = null;
 	Map<Integer, Person> personsMap = new HashMap<Integer, Person>();
-	Scanner sc = new Scanner(System.in);
+	Scanner sc = null;
+
+	public Schedule(Scanner sc) {
+		this.sc = sc;
+	}
 
 	// Start of Methods
 	// ----------------------------------------------------------------------------
 	public void addFacultyToSchedule() { // Adding Faculty to Schedule Method
 
 		int ucfId = 0;
+		int crn = 0;
 		String name = null;
 		String officeLocation = null;
 		int lectureCount = 0;
@@ -351,8 +357,7 @@ class Schedule {
 		String rank = null;
 
 		System.out.print("\nEnter UCF faculty ID: ");
-		ucfId = sc.nextInt();
-		validateUcfId(ucfId);
+		ucfId = validateUcfId();
 
 		if (personsMap.containsKey(ucfId)) {
 			faculty = (Faculty) personsMap.get(ucfId);
@@ -379,101 +384,138 @@ class Schedule {
 
 		System.out.print("\nEnter the crns of the lectures: ");
 		sc.nextLine();
-		String str = sc.nextLine();
+		while (true) {
+			String str = sc.nextLine();
 
-		String crns[] = str.split(" ");
-		for (String c : crns) {
+			String crns[] = str.split(" ");
 
-			if (lecturesMap.containsKey(Integer.parseInt(c))) {
-				Lecture l = lecturesMap.get(Integer.parseInt(c));
+			if (crns.length == lectureCount) {
 
-				faculty.addLecture(l);
+				for (String c : crns) {
 
-				if (l.hasLabs()) {
+					crn = Integer.parseInt(c);
 
-					System.out.println(
-							"\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] has these labs:");
+					if (lecturesMap.containsKey(crn)) {
 
-					for (Lab lb : l.getLabs())
-						System.out.println(lb.getCRN() + "," + lb.getRoomNumber());
+						if (!isLectureScheduledForFaculty(crn)) {
 
-					for (Lab lb1 : l.getLabs()) {
+							Lecture l = lecturesMap.get(crn);
 
-						System.out.print("\nEnter the TA UCF ID for " + lb1.getCRN() + ": ");
-						ucfId = sc.nextInt();
+							faculty.addLecture(l);
 
-						if (!personsMap.containsKey(ucfId)) {
+							if (l.hasLabs()) {
 
-							System.out.print("\nName of TA: ");
-							sc.nextLine();
-							name = sc.nextLine();
+								System.out.println("\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle()
+										+ "] has these labs:");
 
-							System.out.print("\nName of TA supervisor: ");
-							String advisor = sc.nextLine();
+								for (Lab lb : l.getLabs())
+									System.out.println(lb.getCRN() + "," + lb.getRoomNumber());
 
-							System.out.print("\nDegree Seeking: ");
-							String expectedDegree = sc.next();
+								for (Lab lb1 : l.getLabs()) {
 
-							ta = new TeachingAssistant();
-							ta.setUcfId(ucfId);
-							ta.setName(name);
-							ta.setExpectedDegree(expectedDegree);
-							ta.setAdvisor(new Faculty(advisor));
+									if (!isLabScheduledForTeachingAssistant(lb1.getCRN())) {
+										System.out.print("\nEnter the TA UCF ID for " + lb1.getCRN() + ": ");
 
-							personsMap.put(ta.getUcfId(), ta);
+										ucfId = validateUcfId();
 
-						} else {
-							ta = (TeachingAssistant) personsMap.get(ucfId);
-							System.out.println("\nTA found as a student: " + ta.getName());
-						}
-						ta.addLab(Integer.parseInt(c), lb1);
+										if (!personsMap.containsKey(ucfId)) {
 
-					} // for lab
+											System.out.print("\nName of TA: ");
+											sc.nextLine();
+											name = sc.nextLine();
 
-				} // if
-				personsMap.put(faculty.getUcfId(), faculty);
+											System.out.print("\nName of TA supervisor: ");
+											String advisor = sc.nextLine();
 
-				System.out.println("\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
-			} // for crn
-			else
-				System.out.println("CRN [" + c + "] Not found");
-		} // for
+											System.out.print("\nDegree Seeking: ");
+											String expectedDegree = sc.next();
+
+											ta = new TeachingAssistant();
+											ta.setUcfId(ucfId);
+											ta.setName(name);
+											ta.setExpectedDegree(expectedDegree);
+											ta.setAdvisor(new Faculty(advisor));
+
+											personsMap.put(ta.getUcfId(), ta);
+
+										} else {
+
+											Person p = personsMap.get(ucfId);
+											if (p instanceof TeachingAssistant)
+												ta = (TeachingAssistant) p;
+
+											System.out.println("\nTA found as a student: " + ta.getName());
+										}
+										ta.addLab(Integer.parseInt(c), lb1);
+									} else
+										System.out.println("\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle()
+												+ "] is already assigned to another Teaching Assistant ");
+
+								} // for lab
+
+							} // if
+							personsMap.put(faculty.getUcfId(), faculty);
+
+							System.out.println(
+									"\n[" + l.getCRN() + "/" + l.getPrefix() + "/" + l.getTitle() + "] Added!!");
+
+						} else
+							System.out.println("\n Lecture [" + c + "] is already scheduled for another faculty");
+
+					} // for crn
+					else
+						System.out.println("CRN [" + c + "] Not found");
+				} // for
+				return;
+			} else {
+				System.out.println("Enter correct number of crns ");
+				continue;
+			}
+		}
 
 	} // addFacultyToSchedule
 
 	// ----------------------------------------------------------------------------
-	public void enrollStudentToLecture(int ucfId) { // Enrolls Students to Lectures Method
-		int crn;
+	public void enrollStudentToLecture() { // Enrolls Students to Lectures Method
+		int crn = 0;
+		int ucfId = 0;
 
-		validateUcfId(ucfId);
+		System.out.print("\nEnter UCF student ID: ");
+
+		ucfId = validateUcfId();
 
 		if (personsMap.containsKey(ucfId)) {
 			Person person = personsMap.get(ucfId);
 			Student student = (Student) person;
 			System.out.println("Record found/Name: " + student.getName());
 			System.out.printf("Which lecture to enroll [" + student.getName() + "] in? Enter crn of the lecture: ");
-			crn = sc.nextInt();
+			crn = validateCrn();
 
 			if (lecturesMap.containsKey(crn)) {
 
 				Lecture lecture = lecturesMap.get(crn);
 
-				if (lecture.hasLabs()) {
-					System.out.println("[" + lecture.getPrefix() + "/" + lecture.getTitle() + "] has these labs");
-					List<Lab> labs = lecture.getLabs();
+				if (!isStudentEnrolledForLecture(ucfId, crn)) {
+					if (lecture.hasLabs()) {
+						System.out.println("[" + lecture.getPrefix() + "/" + lecture.getTitle() + "] has these labs");
+						List<Lab> labs = lecture.getLabs();
 
-					for (Lab lab : labs)
-						System.out.println(lab.getCRN() + ", " + lab.getRoomNumber());
+						for (Lab lab : labs)
+							System.out.println(lab.getCRN() + ", " + lab.getRoomNumber());
 
-					System.out.printf("\n[" + student.getName() + "] has been added to the lab."
-							+ labs.get(new Random().nextInt(labs.size())).getCRN());
+						System.out.printf("\n[" + student.getName() + "] has been added to the lab."
+								+ labs.get(new Random().nextInt(labs.size())).getCRN());
+
+					} else
+						System.out.println("[" + lecture.getPrefix() + "/" + lecture.getTitle() + "] has no labs");
+
+					student.addLecture(lecture);
+
+					System.out.println("\nStudent enrolled!");
 
 				} else
-					System.out.println("[" + lecture.getPrefix() + "/" + lecture.getTitle() + "] has no labs");
-
-				student.addLecture(lecture);
-
-				System.out.println("\nStudent enrolled!");
+					System.out.println("\nStudent already enrolled for Lecture [" + lecture.getCRN() + "/"
+							+ lecture.getPrefix() + "/" + lecture.getTitle() + "] !");
 
 			} else
 				System.out.println("CRN  [" + crn + "] not found");
@@ -484,9 +526,11 @@ class Schedule {
 	}// enrollStudentToLecture
 
 	// ----------------------------------------------------------------------------
-	public void printScheduleOfFaculty(int ucfId) { // Prints faculty schedule method
+	public void printScheduleOfFaculty() { // Prints faculty schedule method
+		int ucfId = 0;
+		System.out.print("Enter UCF ID: ");
+		ucfId = validateUcfId();
 
-		validateUcfId(ucfId);
 		if (personsMap.containsKey(ucfId)) {
 			Person person = personsMap.get(ucfId);
 			Faculty faculty = (Faculty) person;
@@ -519,9 +563,11 @@ class Schedule {
 	}// printScheduleOfFaculty
 
 	// ----------------------------------------------------------------------------
-	public void printScheduleOfStudent(int ucfId) { // Prints student schedule method
+	public void printScheduleOfStudent() { // Prints student schedule method
+		int ucfId = 0;
+		System.out.print("Enter UCF ID: ");
 
-		validateUcfId(ucfId);
+		ucfId = validateUcfId();
 
 		if (personsMap.containsKey(ucfId)) {
 			Person person = personsMap.get(ucfId);
@@ -553,9 +599,12 @@ class Schedule {
 	}// printScheduleOfStudent
 
 	// ----------------------------------------------------------------------------
-	public void printScheduleOfTeachingAssistant(int ucfId) { // Prints TA schedule method
+	public void printScheduleOfTeachingAssistant() { // Prints TA schedule method
+		int ucfId = 0;
+		System.out.print("\nEnter the TA UCF ID: ");
 
-		validateUcfId(ucfId);
+		ucfId = validateUcfId();
+
 		if (personsMap.containsKey(ucfId)) {
 			Person person = personsMap.get(ucfId);
 			TeachingAssistant ta = (TeachingAssistant) person;
@@ -579,7 +628,10 @@ class Schedule {
 	}// printScheduleOfTeachingAssistant
 
 	// ----------------------------------------------------------------------------
-	public void deleteLecture(int crn) { // Deletes lectures method
+	public void deleteLecture() { // Deletes lectures method
+
+		System.out.print("Enter the crn of the lecture to delete: ");
+		int crn = validateCrn();
 
 		if (lecturesMap.containsKey(crn)) {
 			Lecture lecture = lecturesMap.get(crn);
@@ -641,6 +693,7 @@ class Schedule {
 	}// deleteLecture
 
 	public void exit(String filePath) {
+		System.out.println("You have made a deletion of at least one lecture.\n");
 		System.out.println("Would you like to print the copy of lec.txt?");
 
 		while (true) {
@@ -731,12 +784,139 @@ class Schedule {
 
 	}// readLectures
 
+	boolean isLectureScheduledForFaculty(int crn) {
+		boolean isLectureScheduledForFaculty = false;
+
+		if (personsMap.size() > 0) {
+
+			for (Person p : personsMap.values()) {
+
+				if (p instanceof Faculty) {
+					Faculty f = (Faculty) p;
+
+					for (Lecture l : f.getLecturesTaught()) {
+						if (l.getCRN() == crn)
+							return true;
+
+					}
+
+				}
+
+			}
+
+		}
+		return isLectureScheduledForFaculty;
+	}
+
+	boolean isLabScheduledForTeachingAssistant(int crn) {
+		boolean isLabScheduledForTeachingAssistant = false;
+
+		if (personsMap.size() > 0) {
+
+			for (Person p : personsMap.values()) {
+
+				if (p instanceof TeachingAssistant) {
+					TeachingAssistant t = (TeachingAssistant) p;
+
+					for (Map.Entry<Integer, ArrayList<Lab>> es : t.getLabsSupervised().entrySet()) {
+
+						for (Lab l : es.getValue()) {
+							if (l.getCRN() == crn)
+								return true;
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+		return isLabScheduledForTeachingAssistant;
+	}
+
+	boolean isStudentEnrolledForLecture(int ucfId, int crn) {
+		boolean isStudentEnrolledForLecture = false;
+
+		if (personsMap.containsKey(ucfId)) {
+
+			Student s = (Student) personsMap.get(ucfId);
+
+			ArrayList<Lecture> lectures = s.getLecturesTaken();
+
+			if (lectures.size() > 0) {
+
+				for (Lecture l : lectures)
+					isStudentEnrolledForLecture = l.getCRN() == crn;
+			}
+
+		}
+
+		return isStudentEnrolledForLecture;
+
+	}
+
 	// validate ucfId
-	private void validateUcfId(Integer ucfId) {
+	private int validateUcfId() {
 
-		if (ucfId.toString().length() != 7)
-			throw new IdException(">>>>>>>>>>>>>>>> Sorry incorrect format. (Id's are 7 digits)");
+		String str;
 
+		while (true) {
+			try {
+
+				str = sc.next();
+
+				if (str.length() != 7 || !isNumeric(str))
+					throw new IdException(">>>>>>>>>>>>>>>> Sorry incorrect format. (Id's are 7 digits)");
+				else {
+
+					return Integer.parseInt(str);
+
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				System.out.println("Please enter valid UCF id :");
+				continue;
+			}
+
+		} // while
+	}
+
+	private int validateCrn() {
+
+		String str;
+
+		while (true) {
+			try {
+
+				str = sc.next();
+
+				if (!isNumeric(str))
+					throw new Exception(">>>>>>>>>>>>>>>> Sorry incorrect format. (crn should be numeric)");
+				else {
+
+					return Integer.parseInt(str);
+
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				System.out.println("Try Again :");
+				continue;
+			}
+
+		} // while
+	}
+
+	public boolean isNumeric(String str) {
+		if (str == null) {
+			return false;
+		}
+		try {
+			double d = Integer.parseInt(str);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
 	}
 
 	// update File
@@ -787,18 +967,15 @@ public class FinalProject {
 	// Main
 	public static void main(String[] args) {
 
-		Schedule schedule = new Schedule();
-		Map<Integer, Person> personsMap = new HashMap<Integer, Person>();
-
 		File file = null;
 		String filePath = null;
-		Scanner sc = null;
+		Scanner sc = new Scanner(System.in);
+		Schedule schedule = new Schedule(sc);
 		int choice = 0;
 
 		try {
 
 			// Scanner For User Input
-			sc = new Scanner(System.in);
 
 			System.out.print("Enter the absolute path of the file: ");
 
@@ -836,29 +1013,25 @@ public class FinalProject {
 								break;
 
 							case 2:
-								System.out.print("\nEnter UCF student ID: ");
-								schedule.enrollStudentToLecture(sc.nextInt());
+								schedule.enrollStudentToLecture();
 								break;
 
 							case 3:
-								System.out.print("Enter UCF ID: ");
-								schedule.printScheduleOfFaculty(sc.nextInt());
+								schedule.printScheduleOfFaculty();
 
 								break;
 							case 4:
-								System.out.print("\nEnter the TA UCF ID: ");
-								schedule.printScheduleOfTeachingAssistant(sc.nextInt());
+								schedule.printScheduleOfTeachingAssistant();
 
 								break;
 
 							case 5:
-								System.out.print("Enter UCF ID: ");
-								schedule.printScheduleOfStudent(sc.nextInt());
+
+								schedule.printScheduleOfStudent();
 								break;
 
 							case 6:
-								System.out.print("Enter the crn of the lecture to delete: ");
-								schedule.deleteLecture(sc.nextInt());
+								schedule.deleteLecture();
 
 								break;
 							case 7:
@@ -871,14 +1044,14 @@ public class FinalProject {
 								continue;
 							}// switch
 						}
-					} 
+					} // while
 
 				} else {
 					System.out.println("\nSorry no such file.");
 					System.out.print("\nTry again: ");
 					continue;
-				} 
-			} 
+				} // else
+			} // while
 
 		} catch (Exception e) {
 			System.err.println(e);
